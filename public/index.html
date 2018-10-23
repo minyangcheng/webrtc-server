@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>webrtc-server</title>
+  <style type="text/css">
+    video {
+      max-width: 100%;
+      width: 320px;
+    }
+  </style>
+</head>
+<body>
+
+<div>
+  <label>呼叫方id</label>
+  <input id="fromUserId" type="text">
+</div>
+<div>
+  <label>被叫方id</label>
+  <input id="toUserId" type="text">
+</div>
+
+<button id="call">call</button>
+<button id="answer">answer</button>
+<button id="reject">reject</button>
+
+<div>
+  <video id="localVideo" autoplay></video>
+</div>
+<div>
+  <video id="remoteVideo" autoplay></video>
+</div>
+
+<script src="https://cdn.bootcss.com/jquery/3.3.1/jquery.min.js"></script>
+<script src="/socket.io/socket.io.js"></script>
+<!--<script src="https://webrtc.github.io/adapter/adapter-latest.js"></script>-->
+<script>
+  var localVideo = document.querySelector('#localVideo');
+  var remoteVideo = document.querySelector('#remoteVideo');
+  var socket = io();
+  var roomNo;
+  var pc;
+  var iceServer = {"iceServers": [{"url": "stun:stun.l.google.com:19302"}]};
+
+  socket.on('connectedEvent', () => {
+    console.log('用户id:', socket.id);
+    document.title = socket.id;
+  })
+  socket.on('userListEvent', function (data) {
+    console.log('userList:', data);
+  });
+  socket.on('generateRoomNoEvent', function (data) {
+    console.log('generateRoomNoEvent:', data);
+    roomNo = data;
+    socket.emit('joinEvent', roomNo);
+  });
+  socket.on('videoChatEvent', function (data) {
+    console.log('videoChatEvent:', data);
+    roomNo = data.roomNo;
+    socket.emit('joinEvent', data.roomNo);
+  });
+  socket.on('newPeerEvent', function (data) {
+    console.log('newPeerEvent:', data);
+    call();
+  });
+
+  var flag = false;
+  socket.on('rtcEvent', function (event) {
+    if (event.type === 'offer') {
+      console.log('rtcEvent : offer', event);
+      answer();
+      pc.setRemoteDescription(new RTCSessionDescription(event.sessionDescription));
+      flag = true;
+    } else if (event.type === 'answer') {
+      console.log('rtcEvent : answer', event);
+      pc.setRemoteDescription(new RTCSessionDescription(event.sessionDescription));
+      flag = true;
+    } else if (event.type === 'candidate') {
+      console.log('rtcEvent : candidate', event);
+      var candidate = new RTCIceCandidate({
+        sdpMLineIndex: event.label,
+        candidate: event.candidate
+      });
+      pc.addIceCandidate(candidate);
+    }
+  });
+
+  function call() {
+    getMedia(function () {
+      pc.createOffer(sendOfferFn, offerOrAnswerErrorFn);
+    });
+  }
+
+  function answer() {
+    getMedia(function () {
+      pc.createAnswer(sendAnswerFn, offerOrAnswerErrorFn);
+    });
+  }
+
+  function createRTCPeerConnection() {
+    pc = new RTCPeerConnection(iceServer);
+    pc.onicecandidate = function (event) {
+      if (!event.candidate) {
+        return;
+      }
+      console.log('onicecandidate. Event: ', event);
+      socket.emit('rtcEvent', {
+        "roomNo": roomNo,
+        type: 'candidate',
+        candidate: event.candidate.candidate
+      });
+    };
+    pc.onaddstream = function (event) {
+      remoteVideo.src = URL.createObjectURL(event.stream);
+    };
+    pc.onremovestream = function (event) {
+      console.log('onremovestream. Event: ', event);
+    };
+  }
+
+  function getMedia(callback) {
+    createRTCPeerConnection();
+    navigator.getUserMedia({
+      audio: true,
+      video: true
+    }, function (stream) {
+      localVideo.src = URL.createObjectURL(stream);
+      pc.addStream(stream);
+      callback();
+    }, function (error) {
+      console.log('getUserMedia:', error)
+    })
+  }
+
+  function sendOfferFn(sessionDescription) {
+    pc.setLocalDescription(sessionDescription);
+    socket.emit('rtcEvent', {
+      "roomNo": roomNo,
+      "type": "offer",
+      "sessionDescription": sessionDescription
+    });
+  };
+
+  function sendAnswerFn(sessionDescription) {
+    pc.setLocalDescription(sessionDescription);
+    socket.emit('rtcEvent', {
+      "roomNo": roomNo,
+      "type": "answer",
+      "sessionDescription": sessionDescription
+    });
+  };
+
+  function offerOrAnswerErrorFn(error) {
+    console.log("offerOrAnswerErrorFn: ", error);
+  };
+
+  $('#call').click(function () {
+    let fromUser = $('#fromUserId').val();
+    let toUser = $('#toUserId').val();
+    socket.emit('videoChatEvent', {fromUser, toUser});
+  })
+
+</script>
+</body>
+</html>
