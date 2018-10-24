@@ -25,5 +25,5 @@ httpsServer.listen(8001, function () {
   console.log('listening on *:8001');
 });
 
-require('./socketHandler.js')(io);
+// require('./socketHandler.js')(io);
 require('./socketHandler.js')(ios);
