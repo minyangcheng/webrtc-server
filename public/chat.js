@@ -135,6 +135,7 @@ function getMedia(callback) {
     pc.addStream(stream);
     callback();
   }, function (error) {
+    callback();
     console.log('getUserMedia:', error)
   })
 }
