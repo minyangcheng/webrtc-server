@@ -15,6 +15,7 @@ socket.on('connectedEvent', () => {
 });
 socket.on('userListEvent', function (data) {
   console.log('当前用户列表-userListEvent:', data);
+  refreshUserList & refreshUserList(data);
 });
 socket.on('generateRoomNoEvent', function (data) {
   console.log('生成房间号-generateRoomNoEvent:', data);

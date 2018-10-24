@@ -5,19 +5,27 @@
   <style type="text/css">
     video {
       max-width: 100%;
-      width: 320px;
+      width: 400px;
     }
   </style>
 </head>
 <body>
 
 <div>
+  <p>在线用户ID列表</p>
+  <ol id="userList">
+  </ol>
+</div>
+
+<div style="margin-top: 20px">
   <label>对方ID</label>
   <input id="toUserId" type="text">
 </div>
 
-<button id="call">call</button>
-<button id="handUp">handUp</button>
+<div style="margin-top: 20px">
+  <button id="call">call</button>
+  <button id="handUp">handUp</button>
+</div>
 
 <div>
   <video id="localVideo" autoplay></video>
@@ -40,6 +48,16 @@
   $('#handUp').click(function () {
     doHangUp();
   })
+
+  function refreshUserList(userList) {
+    console.log('refreshUserList')
+    $('#userList').empty();
+    userList.forEach(value => {
+      if (value != document.title) {
+        $('#userList').append($('<li></li>').text(value));
+      }
+    })
+  }
 
 </script>
 </body>
