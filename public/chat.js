@@ -4,7 +4,7 @@ var remoteVideo = document.querySelector('#remoteVideo');
 var roomNo;
 var pc;
 var socketId;
-var iceServer = {'iceServers': [{'url': 'stun:stun.l.google.com:19302'}]};
+var iceServer = {'iceServers': [{'url': 'stun:stun.xten.com'}]};
 
 var socket = io();
 
