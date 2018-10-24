@@ -4,7 +4,13 @@ var remoteVideo = document.querySelector('#remoteVideo');
 var roomNo;
 var pc;
 var socketId;
-var iceServer = {'iceServers': [{'url': 'stun:stun.xten.com'}]};
+var iceServer = {
+  'iceServers': [
+    {'url': 'stun:stun.xten.com'},
+    {'url': 'stun:stun.voipbuster.com'},
+    {'url': 'stun:stun.sipgate.net'}
+  ]
+};
 
 var socket = io();
 
@@ -117,7 +123,8 @@ function createRTCPeerConnection() {
   };
   pc.onaddstream = function (event) {
     console.log('播放远程视频流');
-    remoteVideo.src = URL.createObjectURL(event.stream);
+    remoteVideo.srcObject = stream;
+    // remoteVideo.src = URL.createObjectURL(event.stream);
   };
   pc.onremovestream = function (event) {
     console.log('onremovestream. Event: ', event);
@@ -131,12 +138,12 @@ function getMedia(callback) {
     video: true
   }, function (stream) {
     console.log('播放本地视频流');
-    localVideo.src = URL.createObjectURL(stream);
+    // localVideo.src = URL.createObjectURL(stream);
+    localVideo.srcObject = stream;
     pc.addStream(stream);
     callback();
   }, function (error) {
-    callback();
-    console.log('getUserMedia:', error)
+    alert('您的浏览器不支持视频聊天');
   })
 }
 
