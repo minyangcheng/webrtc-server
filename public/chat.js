@@ -45,15 +45,10 @@ socket.on('agreeEvent', function (data) {
 socket.on('rtcEvent', function (event) {
   if (event.type === 'offer') {
     answer();
-    // pc.setRemoteDescription(new RTCSessionDescription(event.sessionDescription));
     pc.setRemoteDescription(event.sessionDescription);
   } else if (event.type === 'answer') {
-    // pc.setRemoteDescription(new RTCSessionDescription(event.sessionDescription));
     pc.setRemoteDescription(event.sessionDescription);
   } else if (event.type === 'candidate') {
-    // var candidate = new RTCIceCandidate({
-    //   candidate: event.candidate
-    // });
     pc.addIceCandidate(event.candidate);
   }
 });
@@ -97,7 +92,7 @@ function stop() {
 }
 
 function offer() {
-  console.log('创建并发送-offer sessionDescription');
+  console.log('创建RTCPeerConnection');
   createRTCPeerConnection();
   getMedia(function () {
     pc.createOffer(sendOfferFn, offerOrAnswerErrorFn);
@@ -105,7 +100,7 @@ function offer() {
 }
 
 function answer() {
-  console.log('创建并发送-answer sessionDescription');
+  console.log('创建RTCPeerConnection');
   createRTCPeerConnection();
   getMedia(function () {
     pc.createAnswer(sendAnswerFn, offerOrAnswerErrorFn);
