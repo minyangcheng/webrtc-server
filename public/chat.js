@@ -50,11 +50,14 @@ socket.on('agreeEvent', function (data) {
 
 socket.on('rtcEvent', function (event) {
   if (event.type === 'offer') {
+    console.log('收到offer sessionDescription：',event.sessionDescription)
     answer();
     pc.setRemoteDescription(new RTCSessionDescription(event.sessionDescription));
   } else if (event.type === 'answer') {
+    console.log('收到answer sessionDescription：',event.sessionDescription)
     pc.setRemoteDescription(new RTCSessionDescription(event.sessionDescription));
   } else if (event.type === 'candidate') {
+    console.log('收到candidate：',event.candidate)
     var candidate = new RTCIceCandidate({
       candidate: event.candidate
     });
