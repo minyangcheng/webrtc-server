@@ -5,10 +5,21 @@ var roomNo;
 var pc;
 var socketId;
 var iceServer = {
-  'iceServers': [
-    {'url': 'stun:stun.ideasip.com'},
-  ]
-};
+    'iceServers': [
+      {
+        credential: "test1",
+        username: "12345678",
+        urls: [
+          "turn:39.107.240.238:3478?transport=udp",
+          "turn:39.107.240.238:3478?transport=tcp"
+        ]
+      },
+      {
+        urls: ["STUN:39.107.240.238:3478"]
+      }
+    ]
+  }
+;
 
 var socket = io();
 
