@@ -6,9 +6,7 @@ var pc;
 var socketId;
 var iceServer = {
   'iceServers': [
-    {'url': 'stun:stun.xten.com'},
-    {'url': 'stun:stun.voipbuster.com'},
-    {'url': 'stun:stun.sipgate.net'}
+    {'url': 'stun:stun.ideasip.com'},
   ]
 };
 
