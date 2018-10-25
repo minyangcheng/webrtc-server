@@ -131,7 +131,8 @@ function createRTCPeerConnection() {
   };
   pc.onaddstream = function (event) {
     console.log('播放远程视频流');
-    remoteVideo.srcObject = event.stream;
+    // remoteVideo.srcObject = event.stream;
+    remoteVideo.src = URL.createObjectURL(event.stream);
   };
   pc.onremovestream = function (event) {
     console.log('onremovestream. Event: ', event);
