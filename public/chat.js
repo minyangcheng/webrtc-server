@@ -45,14 +45,16 @@ socket.on('agreeEvent', function (data) {
 socket.on('rtcEvent', function (event) {
   if (event.type === 'offer') {
     answer();
-    pc.setRemoteDescription(new RTCSessionDescription(event.sessionDescription));
+    // pc.setRemoteDescription(new RTCSessionDescription(event.sessionDescription));
+    pc.setRemoteDescription(event.sessionDescription);
   } else if (event.type === 'answer') {
-    pc.setRemoteDescription(new RTCSessionDescription(event.sessionDescription));
+    // pc.setRemoteDescription(new RTCSessionDescription(event.sessionDescription));
+    pc.setRemoteDescription(event.sessionDescription);
   } else if (event.type === 'candidate') {
-    var candidate = new RTCIceCandidate({
-      candidate: event.candidate
-    });
-    pc.addIceCandidate(candidate);
+    // var candidate = new RTCIceCandidate({
+    //   candidate: event.candidate
+    // });
+    pc.addIceCandidate(event.candidate);
   }
 });
 
@@ -120,7 +122,7 @@ function createRTCPeerConnection() {
     socket.emit('rtcEvent', {
       'roomNo': roomNo,
       type: 'candidate',
-      candidate: event.candidate.candidate
+      candidate: event.candidate
     });
   };
   pc.onaddstream = function (event) {
@@ -147,6 +149,7 @@ function getMedia(callback) {
 }
 
 function sendOfferFn(sessionDescription) {
+  console.log('创建并发送- sessionDescription:', sessionDescription);
   pc.setLocalDescription(sessionDescription);
   socket.emit('rtcEvent', {
     'roomNo': roomNo,
@@ -156,6 +159,7 @@ function sendOfferFn(sessionDescription) {
 };
 
 function sendAnswerFn(sessionDescription) {
+  console.log('创建并发送- sessionDescription:', sessionDescription);
   pc.setLocalDescription(sessionDescription);
   socket.emit('rtcEvent', {
     'roomNo': roomNo,
