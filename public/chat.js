@@ -37,8 +37,8 @@ socket.on('videoChatEvent', function (data) {
     doReject();
   }
 });
-socket.on('newPeerEvent', function (data) {
-  console.log('房间内有新用户进入-newPeerEvent:', data);
+socket.on('agreeEvent', function (data) {
+  console.log('对方同意开启聊天-agreeEvent:', data);
   offer();
 });
 
@@ -96,6 +96,7 @@ function stop() {
 
 function offer() {
   console.log('创建并发送-offer sessionDescription');
+  createRTCPeerConnection();
   getMedia(function () {
     pc.createOffer(sendOfferFn, offerOrAnswerErrorFn);
   });
@@ -103,6 +104,7 @@ function offer() {
 
 function answer() {
   console.log('创建并发送-answer sessionDescription');
+  createRTCPeerConnection();
   getMedia(function () {
     pc.createAnswer(sendAnswerFn, offerOrAnswerErrorFn);
   });
@@ -114,7 +116,7 @@ function createRTCPeerConnection() {
     if (!event.candidate) {
       return;
     }
-    console.log('创建并发送- candidate');
+    console.log('创建并发送- candidate:', event.candidate);
     socket.emit('rtcEvent', {
       'roomNo': roomNo,
       type: 'candidate',
@@ -124,7 +126,6 @@ function createRTCPeerConnection() {
   pc.onaddstream = function (event) {
     console.log('播放远程视频流');
     remoteVideo.srcObject = event.stream;
-    // remoteVideo.src = URL.createObjectURL(event.stream);
   };
   pc.onremovestream = function (event) {
     console.log('onremovestream. Event: ', event);
@@ -132,13 +133,11 @@ function createRTCPeerConnection() {
 }
 
 function getMedia(callback) {
-  createRTCPeerConnection();
   navigator.getUserMedia({
     audio: true,
     video: true
   }, function (stream) {
     console.log('播放本地视频流');
-    // localVideo.src = URL.createObjectURL(stream);
     localVideo.srcObject = stream;
     pc.addStream(stream);
     callback();

@@ -43,8 +43,7 @@ function handleEvent(socket) {
 
   socket.on('joinEvent', roomNo => {
     socket.join(roomNo);
-    io.to(roomNo).emit('peerEvent', '');
-    socket.to(roomNo).emit('newPeerEvent', socket.id);
+    socket.to(roomNo).emit('agreeEvent', socket.id);
   })
 
   socket.on('leaveEvent', roomNo => {
