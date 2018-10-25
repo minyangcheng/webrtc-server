@@ -9,13 +9,10 @@ var iceServer = {
       {
         credential: "mytest",
         username: "12345678",
-        urls: [
-          "turn:39.107.240.238:3478?transport=udp",
-          "turn:39.107.240.238:3478?transport=tcp"
-        ]
+        urls: "turn:39.107.240.238:3478"
       },
       {
-        urls: ["STUN:39.107.240.238:3478"]
+        urls: "stun:39.107.240.238:3478"
       }
     ]
   }
