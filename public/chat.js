@@ -44,15 +44,15 @@ socket.on('agreeEvent', function (data) {
 
 socket.on('rtcEvent', function (event) {
   if (event.type === 'offer') {
-    console.log('接收到-sessionDescription',event.sessionDescription);
     answer();
-    pc.setRemoteDescription(event.sessionDescription);
+    pc.setRemoteDescription(new RTCSessionDescription(event.sessionDescription));
   } else if (event.type === 'answer') {
-    console.log('接收到-sessionDescription',event.sessionDescription);
-    pc.setRemoteDescription(event.sessionDescription);
+    pc.setRemoteDescription(new RTCSessionDescription(event.sessionDescription));
   } else if (event.type === 'candidate') {
-    console.log('接收到-candidate',event.candidate);
-    pc.addIceCandidate(event.candidate);
+    var candidate = new RTCIceCandidate({
+      candidate: event.candidate
+    });
+    pc.addIceCandidate(candidate);
   }
 });
 
@@ -120,7 +120,7 @@ function createRTCPeerConnection() {
     socket.emit('rtcEvent', {
       'roomNo': roomNo,
       type: 'candidate',
-      candidate: event.candidate
+      candidate: event.candidate.candidate
     });
   };
   pc.onaddstream = function (event) {
