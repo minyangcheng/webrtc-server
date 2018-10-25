@@ -44,11 +44,14 @@ socket.on('agreeEvent', function (data) {
 
 socket.on('rtcEvent', function (event) {
   if (event.type === 'offer') {
+    console.log('接收到-sessionDescription',event.sessionDescription);
     answer();
     pc.setRemoteDescription(event.sessionDescription);
   } else if (event.type === 'answer') {
+    console.log('接收到-sessionDescription',event.sessionDescription);
     pc.setRemoteDescription(event.sessionDescription);
   } else if (event.type === 'candidate') {
+    console.log('接收到-candidate',event.candidate);
     pc.addIceCandidate(event.candidate);
   }
 });
