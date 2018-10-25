@@ -9,7 +9,10 @@ var iceServer = {
       {
         credential: "mytest",
         username: "12345678",
-        urls: "turn:39.107.240.238:3478"
+        urls: [
+          "turn:39.107.240.238:3478?transport=udp",
+          "turn:39.107.240.238:3478?transport=tcp"
+        ]
       },
       {
         urls: "stun:39.107.240.238:3478"
@@ -50,14 +53,14 @@ socket.on('agreeEvent', function (data) {
 
 socket.on('rtcEvent', function (event) {
   if (event.type === 'offer') {
-    console.log('收到offer sessionDescription：',event.sessionDescription)
+    console.log('收到offer sessionDescription：', event.sessionDescription)
     answer();
     pc.setRemoteDescription(new RTCSessionDescription(event.sessionDescription));
   } else if (event.type === 'answer') {
-    console.log('收到answer sessionDescription：',event.sessionDescription)
+    console.log('收到answer sessionDescription：', event.sessionDescription)
     pc.setRemoteDescription(new RTCSessionDescription(event.sessionDescription));
   } else if (event.type === 'candidate') {
-    console.log('收到candidate：',event.candidate)
+    console.log('收到candidate：', event.candidate)
     var candidate = new RTCIceCandidate({
       candidate: event.candidate
     });
