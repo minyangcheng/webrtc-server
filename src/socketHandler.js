@@ -36,9 +36,10 @@ function deleteUser(socket) {
 function handleEvent(socket) {
 
   socket.on('videoChatEvent', data => {
+    data = JSON.parse(data)
     let roomNo = Date.now();
     socket.emit('generateRoomNoEvent', roomNo);
-    socket.to(data.toUser).emit('videoChatEvent', {roomNo, fromUser: data.fromUser});
+    io.to(data.toUser).emit('videoChatEvent', {roomNo, fromUser: data.fromUser});
   });
 
   socket.on('joinEvent', roomNo => {
@@ -51,6 +52,7 @@ function handleEvent(socket) {
   })
 
   socket.on('rtcEvent', event => {
+    event = JSON.parse(event);
     socket.to(event.roomNo).emit('rtcEvent', event);
   })
 

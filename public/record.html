@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>record</title>
+</head>
+<body>
+<div>
+  <video id="localVideo" autoplay></video>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/RecordRTC/5.4.8/RecordRTC.js"></script>
+<script src="https://cdn.bootcss.com/jquery/3.3.1/jquery.min.js"></script>
+<script>
+  var localVideo = document.querySelector('#localVideo');
+  var recordRTC;
+
+  function successCallback(stream) {
+    var options = {
+      type: 'video',
+      mimeType: 'video/webm',
+      bitsPerSecond: 256 * 8 * 1024,
+    };
+    recordRTC = RecordRTC(stream, options);
+    recordRTC.startRecording();
+  }
+
+  function errorCallback(error) {
+  }
+
+  var mediaConstraints = {video: true, audio: true};
+
+  navigator.mediaDevices.getUserMedia(mediaConstraints).then(successCallback).catch(errorCallback);
+
+  setTimeout(function () {
+    recordRTC.stopRecording(function (audioVideoWebMURL) {
+      // localVideo.src = audioVideoWebMURL;
+      this.save('file-name');
+    });
+  }, 5000);
+</script>
+</body>
+</html>
